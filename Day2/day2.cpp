@@ -59,6 +59,5 @@ int main() {
         }
     }
     cout << safeCount << endl;
-    cout << stoi("2#18)") << endl;
     file.close();
 }
