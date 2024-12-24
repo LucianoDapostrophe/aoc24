@@ -35,8 +35,7 @@ int main() {
     //part2
     map<int, int> list2Freq;
     set<int> list1Nums(list1.begin(), list1.end());
-    for (int i = 0; i < list2.size(); i++)
-    {
+    for (int i = 0; i < list2.size(); i++) {
         if (list1Nums.find(list2[i]) != list1Nums.end()) {
             list2Freq[list2[i]]++;
         }
