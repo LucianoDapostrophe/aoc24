@@ -5,20 +5,34 @@
 #include <vector>
 using namespace std;
 
-bool checkSafeDecreasing(const vector<int>& report) {
+bool checkSafeDecreasing(const vector<int>& report, bool dampener) {
     for (int i = 1; i < report.size(); i++) {
         int difference = report[i] - report[i - 1];
         if (difference < -3 || difference >= 0) {
+            if (dampener) {
+                vector<int> reportIRemoved(report.begin(), report.end());
+                reportIRemoved.erase(reportIRemoved.begin() + i);
+                vector<int> reportIMinus1Removed(report.begin(), report.end());
+                reportIMinus1Removed.erase(reportIMinus1Removed.begin() + i - 1);
+                return checkSafeDecreasing(reportIRemoved, false) || checkSafeDecreasing(reportIMinus1Removed, false);
+            }
             return false;
         }
     }
     return true;
 }
 
-bool checkSafeIncreasing(const vector<int>& report) {
+bool checkSafeIncreasing(const vector<int>& report, bool dampener) {
     for (int i = 1; i < report.size(); i++) {
         int difference = report[i] - report[i - 1];
         if (difference > 3 || difference <= 0) {
+            if (dampener) {
+                vector<int> reportIRemoved(report.begin(), report.end());
+                reportIRemoved.erase(reportIRemoved.begin() + i);
+                vector<int> reportIMinus1Removed(report.begin(), report.end());
+                reportIMinus1Removed.erase(reportIMinus1Removed.begin() + i - 1);
+                return checkSafeIncreasing(reportIRemoved, false) || checkSafeIncreasing(reportIMinus1Removed, false);
+            }
             return false;
         }
     }
@@ -40,7 +54,7 @@ int main() {
         while (lineStream >> n) {
             report.push_back(n);
         }
-        if (checkSafeIncreasing(report) || checkSafeDecreasing(report)) {
+        if (checkSafeIncreasing(report, true) || checkSafeDecreasing(report, true)) {
             safeCount++;
         }
     }
