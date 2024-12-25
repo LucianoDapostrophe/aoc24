@@ -74,18 +74,6 @@ int checkSW(const vector<string>& puzzle, int i, int j) {
 int main() {
     ifstream file("input.txt");
     vector<string> crossword;
-    // {
-    //     "MMMSXXMASM",
-    //     "MSAMXMSMSA",
-    //     "AMXSXMAAMM",
-    //     "MSAMASMSMX",
-    //     "XMASAMXAMM",
-    //     "XXAMMXXAMA",
-    //     "SMSMSASXSS",
-    //     "SAXAMASAAA",
-    //     "MAMMMXMMMM",
-    //     "MXMXAXMASX"
-    // };
     string line;
     if (!file.is_open()) {
         cerr << "file failed to open" << endl;
