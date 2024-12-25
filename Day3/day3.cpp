@@ -5,6 +5,9 @@
 
 using namespace std;
 
+bool doFunc = true;
+int parseMul(string op);
+
 bool checkBrackets(string op) {
     stack<char> stack;
     for (char c : op) {
@@ -31,8 +34,50 @@ bool checkDigits(string operand) {
     return true;
 }
 
+int parseOps(string& line) {
+    int lineTotal = 0;
+    while (line.find("mul") != string::npos) {
+        auto nearestMul = line.find("mul");
+        auto nearestDo = line.find("do()");
+        auto nearestDont = line.find("don't()");
+        if (nearestMul < nearestDont) {
+            line = line.substr(nearestMul);
+            auto end = line.find(")") + 1;
+            if (doFunc || nearestDo < nearestMul) {
+                doFunc = true;
+                string op = line.substr(0, end);
+                lineTotal += parseMul(op);
+            }
+            line = line.substr(end);
+        }
+        else if (nearestDont < nearestDo) {
+            doFunc = false;
+            line = line.substr(nearestDont + 7);
+        }
+    }
+    //for substrings, do and don't after no more muls matters
+    while (line.find("do()") != string::npos || line.find("don't()") != string::npos) {
+        auto nearestDo = line.find("do()");
+        auto nearestDont = line.find("don't()");
+        if (nearestDont < nearestDo) {
+            doFunc = false;
+            line = line.substr(nearestDont + 7);
+        }
+        else {
+            doFunc = true;
+            line = line.substr(nearestDo + 4);
+        }
+    }
+    return lineTotal;
+}
+
 int parseMul(string op) {
     string mulRemoved = op.substr(3);
+    //if there's a nested don't, this mul isn't valid so parse this
+    //subline and then parse the rest
+    if (mulRemoved.find("don't()") != string::npos) {
+        return parseOps(mulRemoved);
+    }
     //check the brackets
     if (mulRemoved[0] == '(' && mulRemoved[mulRemoved.length() - 1] == ')' && checkBrackets(mulRemoved)) {
         //remove outer brackets
@@ -62,6 +107,7 @@ int parseMul(string op) {
     }
 }
 
+
 int main() {
     ifstream file("input.txt");
     string line;
@@ -71,13 +117,7 @@ int main() {
     }
     int total = 0;
     while (getline(file, line)) {
-        while (line.find("mul") != string::npos) {
-            line = line.substr(line.find("mul"));
-            auto end = line.find(")") + 1;
-            string op = line.substr(0, end);
-            total += parseMul(op);
-            line = line.substr(end);
-        }
+        total += parseOps(line);
     }
     file.close();
     cout << total << endl;
